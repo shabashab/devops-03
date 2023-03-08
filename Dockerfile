@@ -5,6 +5,7 @@ WORKDIR /app
 
 COPY ./ .
 
+RUN mv .env.production .env
 RUN npm install
 
 EXPOSE 80
