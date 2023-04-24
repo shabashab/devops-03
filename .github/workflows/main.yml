@@ -1,0 +1,55 @@
+name: Lint, build, push, test
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  IMAGE_TARGET: shabashab/devops-03:latest
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Run ESLint
+        run: npm run lint
+
+  build-push:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ env.IMAGE_TARGET }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build-push
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Pull Docker image
+        run: docker pull ${{ env.IMAGE_TARGET }}
+      - name: Start Docker container
+        run: docker run -d -p 3000:3000 ${{ env.IMAGE_NAME }}
+      - name: Wait 5 seconds for container to start
+        run: sleep 5 
+      - name: Ping container
+        run: curl -I 127.0.0.1:3000
