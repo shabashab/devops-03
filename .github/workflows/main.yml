@@ -49,7 +49,7 @@ jobs:
         run: docker pull ${{ env.IMAGE_TARGET }}
       - name: Start Docker container
         run: docker run -d -p 3000:3000 ${{ env.IMAGE_TARGET }}
-      - name: Wait 5 seconds for container to start
-        run: sleep 5 
+      - name: Wait 10 seconds for container to start
+        run: sleep 10 
       - name: Ping container
         run: curl -I 127.0.0.1:3000
