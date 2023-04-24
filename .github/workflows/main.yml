@@ -48,7 +48,7 @@ jobs:
       - name: Pull Docker image
         run: docker pull ${{ env.IMAGE_TARGET }}
       - name: Start Docker container
-        run: docker run -d -p 3000:3000 ${{ env.IMAGE_TARGET }}
+        run: docker run -d --env PORT=3000 -p 3000:3000 ${{ env.IMAGE_TARGET }}
       - name: Wait 10 seconds for container to start
         run: sleep 10 
       - name: Ping container
